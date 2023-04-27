@@ -20,27 +20,15 @@ int lim = 10; // + - limits for if
 
 void setup()
 {
-  //pinMode (13, OUTPUT); //LEDBLINK
   myservo.attach(9);
   myservo2.attach(10);
   pinMode(A5, INPUT);
   pinMode(A4, INPUT);
-  Serial.begin(9600);
-  Serial.print ("max light/minlight:");
-  Serial.print (maxL);
-  Serial.print ("/");
-  Serial.print (minL);
-  Serial.print (" | max rotation:");
-  Serial.print (maxR);
-  Serial.print (" | delay time:");
-  Serial.print (time);
-  Serial.print (" | limits for first if:");
-  Serial.println (lim);
+  monitor_print_info ();
 }
 
 void loop()
 {
-  //digitalWrite(13, LOW); //LEDBLINK
   sensorvalue_new = analogRead(A5);
   sensorvalue_new_2 = analogRead(A4);
   Serial.print ("light:" );
@@ -50,6 +38,7 @@ void loop()
   Serial.print(sensorvalue_new_2);
   Serial.print ("   ");
 
+  //first servo if--------------------------------------------
   if (sensorvalue_new <= 500 || sensorvalue_new >= 5) {
     if ( abs(sensorvalue_new - sensorvalue) > lim) {
       if (sensorvalue_new > sensorvalue) {
@@ -57,7 +46,6 @@ void loop()
         rotation += 5;
         if (rotation > 180) {
           rotation = 180;
-          //digitalWrite(13, HIGH); //LEDBLINK
         }
       }
 
@@ -76,10 +64,11 @@ void loop()
   }
   else if (sensorvalue_new > 500) {
     rotation = 180;
-    //digitalWrite(13, HIGH); //LEDBLINK
+    
   }
+//end of servo --------------------------------------------
 
-  //second servo if--------------------------------------------
+//second servo if--------------------------------------------
   if (sensorvalue_new_2 <= 500 || sensorvalue_new_2 >= 5) {
     if ( abs(sensorvalue_new_2 - sensorvalue_2) > lim) {
       if (sensorvalue_new_2 > sensorvalue_2) {
@@ -87,7 +76,6 @@ void loop()
         rotation_2 += 5;
         if (rotation_2 > 180) {
           rotation_2 = 180;
-          //digitalWrite(13, HIGH); //LEDBLINK
         }
       }
 
@@ -106,18 +94,28 @@ void loop()
   }
   else if (sensorvalue_new_2 > 500) {
     rotation_2 = 180;
-    //digitalWrite(13, HIGH); //LEDBLINK
   }
-//end of servo --------------------------------------------
+//end of second servo --------------------------------------------
 
 myservo.write (rotation);
 myservo2.write (rotation_2);
 time = rotation / 5000 ; //delay time
 
-
 //sensorvalue = sensorvalue_new;
 Serial.print ("rotation:");
 Serial.println(rotation_2);
+}
 
-// delay (1000);
+void monitor_print_info (){
+  Serial.begin(9600);
+  Serial.print ("max light/minlight:");
+  Serial.print (maxL);
+  Serial.print ("/");
+  Serial.print (minL);
+  Serial.print (" | max rotation:");
+  Serial.print (maxR);
+  Serial.print (" | delay time:");
+  Serial.print (time);
+  Serial.print (" | limits for first if:");
+  Serial.println (lim);
 }
