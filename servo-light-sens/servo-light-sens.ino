@@ -2,6 +2,8 @@
 // C++ code
 //https://www.arduino.cc/en/Tutorial/Knob - servo instructions
 #include <Servo.h>
+#include <ArduinoJson.h>
+
 int sensorvalue = 0;
 int sensorvalue_new = 0;
 int rotation = 0;
