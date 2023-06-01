@@ -1,21 +1,6 @@
 // C++ code
 //https://www.arduino.cc/en/Tutorial/Knob - servo instructions
 #include <Servo.h>
-#include <ArduinoJson.h>
-#include <EEPROM.h>
-
-#define MAX_HISTORY_SIZE 100  // Maximum number of entries in the history
-
-struct HistoryEntry {
-  int sensorvalue_new;
-  int rotation;
-};
-
-HistoryEntry history[MAX_HISTORY_SIZE];
-int historyIndex = 0;
-
-// Create a JSON object to store the data
-StaticJsonDocument<200> doc;
 
 //1st Servo
 int sensorvalue = 0;
@@ -37,22 +22,15 @@ int lim = 10; // + - limits for if
 
 void setup()
 {
-
   Serial.begin(9600);
-  //1st Servo
+
+  //1st Servo-///////////////////////////////////////////////////////////////
   myservo.attach(9);
   pinMode(A5, INPUT);
 
-  //2nd Servo
+  //2nd Servo-///////////////////////////////////////////////////////////////
   myservo2.attach(10);
   pinMode(A4, INPUT);
-
-  //monitor_print_info ();
-
-  // Load the history from EEPROM
-  for (int i = 0; i < MAX_HISTORY_SIZE; i++) {
-    EEPROM.get(i * sizeof(HistoryEntry), history[i]);
-  }
 }
 
 void loop()
@@ -60,50 +38,30 @@ void loop()
   sensorvalue_new = analogRead(A5); //1st Servo
   sensorvalue_new_2 = analogRead(A4);//2nd Servo
 
-  //Json save 1st servo -------------------------------------
-  // Save the current sensor value and rotation to history
-  HistoryEntry entry;
-  entry.sensorvalue_new = sensorvalue_new;
-  entry.rotation = rotation;
-  history[historyIndex] = entry;
-  historyIndex = (historyIndex + 1) % MAX_HISTORY_SIZE;
-
-  // Update the JSON object with the latest values
-  doc["light"] = sensorvalue_new;
-  doc["rotation"] = rotation;
-
-  // Update the EEPROM with the latest history
-  int eepromIndex = 0;
-  for (int i = 0; i < MAX_HISTORY_SIZE; i++) {
-    EEPROM.put(eepromIndex, history[i]);
-    eepromIndex += sizeof(HistoryEntry);
-  }
-
-  // Serialize the JSON object and print it
-  String jsonStr;
-  serializeJson(doc, jsonStr);
-  Serial.println(jsonStr);
-
-  //Serial.print ("light:" );
-  //Serial.print(sensorvalue_new);
-  //Serial.print ("   ");
-  //Serial.print (" new light:");
-  //Serial.print(sensorvalue_new_2);
-  //Serial.print ("   ");
-
   //Servos ifs--------------------------------------------
   firstServo();
   secondServo();
   //end of servos --------------------------------------------
 
-  myservo.write (rotation);
-  myservo2.write (rotation_2);
-  //time = rotation / 5000 ; //delay time
+  myservo.write (rotation);//send the angle of rotatin to 1st servo
+  myservo2.write (rotation_2);//send the angle of rotatin to 1st servo
 
-  //sensorvalue = sensorvalue_new;
-  //Serial.print ("rotation:");
-  //Serial.println(rotation_2);
+  //1st Servo--------------------------
+  Serial.print ("1st:");
+  Serial.print(sensorvalue_new);
+  Serial.print (":");
+  Serial.println(rotation);
+
+  //2nd Servo------------------------
+  Serial.print ("2nd:");
+  Serial.print(sensorvalue_new_2);
+  Serial.print (":");
+  Serial.println(rotation_2);
+
+  //time = rotation / 5000 ; //delay time
 }
+
+
 /*void monitor_print_info (){
   Serial.print ("max light/minlight:");
   Serial.print (maxL);
